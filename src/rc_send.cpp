@@ -66,6 +66,9 @@ void display_byte(char outgoing_byte)
     lcd.print(" (");
     lcd.print(outgoing_byte, DEC);
     lcd.print(") ");
+
+    // Echo back
+    Serial.print(outgoing_byte);
 }
 
 void send_byte(char outgoing_byte)
@@ -83,8 +86,10 @@ void loop() {
 
         // say what you got:
         if (num_read > 0) {
-            Serial.print(num_read);
-            Serial.print(" bytes: ");
+            lcd.clear();
+            lcd.setCursor(0, 0);
+            lcd.print(num_read);
+            lcd.print(" serial bytes:");
             char last_byte = -1;
             for(int idx = 0; idx < num_read; idx++) {
                 if(incoming_serial[idx] != last_byte) {
@@ -92,10 +97,14 @@ void loop() {
                     last_byte = incoming_serial[idx];
                 }
             }
-            Serial.println("");
         }
     } else {
         int key = get_adc_key(analogRead(ADC_PIN));
+        if (key >=0 && key < 6) {
+            lcd.clear();
+            lcd.setCursor(0, 0);
+            lcd.print("button pressed:");
+        }
         switch (key) {
         case 0:
             // Send d - right
